@@ -37,8 +37,8 @@ class PuddleEnv(gym.Env):
         self.pos = np.clip(self.pos, 0.0, 1.0)
 
         reward = -1.
-        for cen, wid in zip(self.puddle_center, self.puddle_width)
-            reward -= 2. * self._gaussian1d(self.pos[0], cen[0], wid[0]) *
+        for cen, wid in zip(self.puddle_center, self.puddle_width):
+            reward -= 2. * self._gaussian1d(self.pos[0], cen[0], wid[0]) * \
                 self._gaussian1d(self.pos[1], cen[1], wid[1])
 
         done = np.linalg.norm((self.pos - self.goal), ord=1) < self.goal_threshold
@@ -49,10 +49,11 @@ class PuddleEnv(gym.Env):
         return np.exp(-((p - mu)**2)/(2.*sig**2)) / (sig*np.sqrt(2.*np.pi))
 
     def _reset(self):
-        if self.start == None:
+        if self.start is None:
             self.pos = self.observation_space.sample()
         else:
             self.pos = self.start
+        return self.pos
 
     def _render(self, mode='human', close=False):
         return
