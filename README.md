@@ -17,7 +17,8 @@ env = gym.make('PuddleWorld-v0')
 ```
 
 ##  Notes
-Rendering is available, although the program runs faster without it.
+Rendering is available. The program runs much faster without it, but it's good for debugging.
+
 Run this line after each time step to see the puddles and agent location.
 ```python
 env.render()
