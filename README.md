@@ -6,6 +6,8 @@ Puddle world environment for OpenAI Gym with continuous state space and discrete
 </kbd>
 
 ## Installation
+Run this line in the project directory.
+
 `pip3 install -e .`
 
 ## Usage
