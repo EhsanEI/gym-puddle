@@ -6,7 +6,7 @@ import copy
 from gym.envs.classic_control import rendering
 
 class PuddleEnv(gym.Env):
-    metadata = {'render.modes': ['human']}
+    metadata = {'render.modes': ['human', 'rgb_array']}
 
     def __init__(self, start=[0.2, 0.4], goal=[1.0, 1.0], goal_threshold=0.1,
             noise=0.025, thrust=0.05, puddle_center=[[.3, .6], [.4, .5], [.8, .9]],
@@ -36,8 +36,6 @@ class PuddleEnv(gym.Env):
     def _step(self, action):
         assert self.action_space.contains(action), "%r (%s) invalid"%(action, type(action))
 
-        self.last_pos = copy.copy(self.pos)
-
         self.pos += self.actions[action] + self.np_random.uniform(low=-self.noise, high=self.noise, size=(2,))
         self.pos = np.clip(self.pos, 0.0, 1.0)
 
@@ -59,11 +57,10 @@ class PuddleEnv(gym.Env):
         return np.exp(-((p - mu)**2)/(2.*sig**2)) / (sig*np.sqrt(2.*np.pi))
 
     def _reset(self):
-        self.last_pos = None
         if self.start is None:
             self.pos = self.observation_space.sample()
         else:
-            self.pos = self.start
+            self.pos = copy.copy(self.start)
         return self.pos
 
     def _render(self, mode='human', close=False):
@@ -88,7 +85,7 @@ class PuddleEnv(gym.Env):
                 for j in range(img_height):
                     x = float(i)/img_width
                     y = float(j)/img_height
-                    pixels[i,j,:] = self._get_reward(np.array([x,y]))
+                    pixels[j,i,:] = self._get_reward(np.array([x,y]))
 
             pixels -= pixels.min()
             pixels *= 255./pixels.max()
@@ -104,25 +101,15 @@ class PuddleEnv(gym.Env):
 
             self.viewer.add_geom(bg_image)
 
-
-            l, r = self.pos[0]*screen_width-3, self.pos[0]*screen_width+3
-            t, b = self.pos[1]*screen_height+3, self.pos[1]*screen_height-3
-            agent_polygon = rendering.FilledPolygon([(l,b), (l,t), (r,t), (r,b)])
+            thickness = 5
+            agent_polygon = rendering.FilledPolygon([(-thickness,-thickness),
+             (-thickness,thickness), (thickness,thickness), (thickness,-thickness)])
             agent_polygon.set_color(0.0,1.0,0.0)
             self.agenttrans = rendering.Transform()
             agent_polygon.add_attr(self.agenttrans)
             self.viewer.add_geom(agent_polygon)
 
         self.agenttrans.set_translation(self.pos[0]*screen_width, self.pos[1]*screen_height)
-        # Uncomment these if you want to see the trajectory.
-        # Warning: It will slow down the program.
-
-        # if self.last_pos is not None:
-        #     scale = np.array((screen_width, screen_height))
-        #     movement = rendering.Line(start=self.last_pos*scale, end=self.pos*scale)
-        #     movement.set_color(0.0,0.0,0.7)
-        #     self.viewer.add_geom(movement)
-
 
         return self.viewer.render(return_rgb_array = mode=='rgb_array')
 
