@@ -1,6 +1,10 @@
 # gym-puddle
 Puddle world environment for OpenAI Gym with continuous state space and discrete action space.
 
+<kbd>
+  <img src='screenshot.png'/>
+</kbd>
+
 ## Installation
 `pip3 install -e .`
 
