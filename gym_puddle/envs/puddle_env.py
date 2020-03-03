@@ -3,7 +3,6 @@ from gym import error, spaces, utils
 from gym.utils import seeding
 import numpy as np
 import copy
-from gym.envs.classic_control import rendering
 
 class PuddleEnv(gym.Env):
     metadata = {'render.modes': ['human', 'rgb_array']}
@@ -74,6 +73,8 @@ class PuddleEnv(gym.Env):
         screen_height = 400
 
         if self.viewer is None:
+            from gym.envs.classic_control import rendering
+            from gym_puddle.shapes.image import Image
             self.viewer = rendering.Viewer(screen_width, screen_height)
 
             import pyglet
@@ -112,14 +113,3 @@ class PuddleEnv(gym.Env):
         self.agenttrans.set_translation(self.pos[0]*screen_width, self.pos[1]*screen_height)
 
         return self.viewer.render(return_rgb_array = mode=='rgb_array')
-
-
-class Image(rendering.Geom):
-    def __init__(self, img, width, height):
-        rendering.Geom.__init__(self)
-        self.width = width
-        self.height = height
-        self.img = img
-        self.flip = False
-    def render1(self):
-        self.img.blit(0, 0, width=self.width, height=self.height)
